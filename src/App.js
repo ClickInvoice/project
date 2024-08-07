@@ -125,8 +125,8 @@ function App() {
           </Text>
           <br />
           <Text variant="bodyMd" as="p" style={{ marginTop: '10px' }}>
-            Enjoying ClickInvoice? Get the full experience with Mail Merge integration on the Google Workspace Marketplace: <Link url="https://workspace.google.com/marketplace/app/clickinvoice/..." external>
-              Buy ClickInvoice
+            Enjoying Click Invoice? Get the full experience with Mail Merge integration on the Google Workspace Marketplace: <Link url="https://workspace.google.com/marketplace/app/clickinvoice/..." external>
+              Install Click Invoice with Mail Merge
             </Link>
           </Text>
         </Card>
