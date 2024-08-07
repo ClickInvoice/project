@@ -1,5 +1,5 @@
 /* Import Polaris styles */
-@import '~@shopify/polaris/dist/styles.css';
+@import '../node_modules/@shopify/polaris/dist/styles.css';
 
 /* General styles */
 body {
