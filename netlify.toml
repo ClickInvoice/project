@@ -4,7 +4,7 @@
 
 [[redirects]]
   from = "/auth/callback"
-  to = "/auth/callback" # Ensure this matches your app's callback URL
+  to = "/api/shopify/callback"
   status = 200
   force = true
 
