@@ -26,6 +26,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('');
 
+  // Handle file drop and selection
   const handleDropZoneDrop = (acceptedFiles) => {
     if (acceptedFiles.length > 0) {
       setFile(acceptedFiles[0]);
@@ -34,6 +35,7 @@ function App() {
     }
   };
 
+  // Generate invoices from CSV file
   const handleGenerateInvoices = async () => {
     if (!file) {
       setStatus('Please upload a CSV file.');
@@ -89,16 +91,18 @@ function App() {
   useEffect(() => {
     const { shop, code, hmac } = queryString.parse(window.location.search);
 
+    // Check if we are in the OAuth flow
     if (shop && !code) {
+      // Initiate OAuth flow
       const state = 'random_state_string'; // Replace with a unique state string
       const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${API_KEY}&scope=${SCOPES}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&state=${state}`;
-
       window.location.href = installUrl;
     } else if (shop && code && hmac) {
+      // Handle OAuth callback
       axios.post('/api/shopify/callback', { code, shop, hmac })
         .then(response => {
           console.log('Authentication successful:', response.data);
-          window.location.href = '/dashboard';
+          window.location.href = '/dashboard'; // Adjust this to your app's dashboard path
         })
         .catch(error => {
           console.error('Authentication error:', error);
