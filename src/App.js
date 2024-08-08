@@ -1,11 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Papa from 'papaparse';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { Page, Card, Button, DropZone, Text, AppProvider, Link } from '@shopify/polaris';
-import './App.css'; // This now includes Shopify Polaris styles
+import './App.css';
 import PizZip from 'pizzip';
 import Docxtemplater from 'docxtemplater';
+import queryString from 'query-string';
+import axios from 'axios';
+
+// Shopify API credentials
+const API_KEY = 'd77db820807364fdf6493f130916fe8c';
+const API_SECRET = '34eeaa26270ddcf5c4b5c3c7347f6c22';
+const REDIRECT_URI = 'https://clickinvoice.netlify.app/';
+const SCOPES = 'read_orders,write_orders';
 
 // Normalize headers to snake_case
 const normalizeHeader = (header) => {
@@ -85,6 +93,30 @@ function App() {
       setLoading(false);
     }
   };
+
+  // OAuth Flow: Handle redirection to Shopify and callback
+  useEffect(() => {
+    const { shop, code, hmac } = queryString.parse(window.location.search);
+
+    if (shop && !code) {
+      // Step 1: Redirect to Shopify for app installation
+      const redirectUri = encodeURIComponent(REDIRECT_URI);
+      const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${API_KEY}&scope=${SCOPES}&redirect_uri=${redirectUri}&state=random_state_string`;
+
+      window.location.href = installUrl;
+    } else if (shop && code && hmac) {
+      // Step 2: Handle OAuth callback and exchange code for access token
+      axios.post('/api/shopify/callback', { code, shop, hmac })
+        .then(response => {
+          console.log('Authentication successful:', response.data);
+          // Redirect to the main page or dashboard
+          window.location.href = '/dashboard';
+        })
+        .catch(error => {
+          console.error('Authentication error:', error);
+        });
+    }
+  }, []);
 
   return (
     <AppProvider>
