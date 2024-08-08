@@ -9,11 +9,11 @@ import Docxtemplater from 'docxtemplater';
 import queryString from 'query-string';
 import axios from 'axios';
 
-// Shopify API credentials
-const API_KEY = 'd77db820807364fdf6493f130916fe8c';
-const API_SECRET = '34eeaa26270ddcf5c4b5c3c7347f6c22';
-const REDIRECT_URI = 'https://clickinvoice.netlify.app/';
-const SCOPES = 'read_orders,write_orders';
+// Shopify API credentials from environment variables
+const API_KEY = process.env.REACT_APP_API_KEY;
+const API_SECRET = process.env.REACT_APP_API_SECRET;
+const REDIRECT_URI = process.env.REACT_APP_REDIRECT_URI;
+const SCOPES = process.env.REACT_APP_SCOPES;
 
 // Normalize headers to snake_case
 const normalizeHeader = (header) => {
