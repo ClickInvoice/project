@@ -11,7 +11,7 @@ import axios from 'axios';
 
 // Shopify API credentials from environment variables
 const API_KEY = process.env.REACT_APP_SHOPIFY_API_KEY;
-const REDIRECT_URI = 'https://clickinvoice.netlify.app/auth/callback';
+const REDIRECT_URI = process.env.REACT_APP_SHOPIFY_REDIRECT_URI; // Use environment variable
 const SCOPES = 'read_orders,write_orders';
 
 const normalizeHeader = (header) => {
@@ -86,7 +86,6 @@ function App() {
     }
   };
 
-  // OAuth Flow: Handle redirection to Shopify and callback
   useEffect(() => {
     const { shop, code, hmac } = queryString.parse(window.location.search);
 
