@@ -12,7 +12,7 @@ import axios from 'axios';
 // Shopify API credentials from environment variables
 const API_KEY = process.env.REACT_APP_SHOPIFY_API_KEY;
 const REDIRECT_URI = process.env.REACT_APP_SHOPIFY_REDIRECT_URI; // Use environment variable
-const SCOPES = 'read_orders,write_orders';
+const SCOPES = ''; // No scopes needed
 
 const normalizeHeader = (header) => {
   return header
@@ -26,7 +26,6 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('');
 
-  // Handle file drop and selection
   const handleDropZoneDrop = (acceptedFiles) => {
     if (acceptedFiles.length > 0) {
       setFile(acceptedFiles[0]);
@@ -35,7 +34,6 @@ function App() {
     }
   };
 
-  // Generate invoices from CSV file
   const handleGenerateInvoices = async () => {
     if (!file) {
       setStatus('Please upload a CSV file.');
@@ -88,27 +86,24 @@ function App() {
     }
   };
 
-useEffect(() => {
-  const { shop, code, hmac } = queryString.parse(window.location.search);
+  useEffect(() => {
+    const { shop, code, hmac } = queryString.parse(window.location.search);
 
-  if (shop && !code) {
-    // Initiate OAuth flow
-    const state = 'random_state_string'; // Replace with a unique state string
-    const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${API_KEY}&scope=${SCOPES}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&state=${state}`;
-    window.location.href = installUrl;
-  } else if (shop && code && hmac) {
-    // Handle OAuth callback
-    axios.post('/api/shopify/callback', { code, shop, hmac })
-      .then(response => {
-        console.log('Authentication successful:', response.data);
-        window.location.href = '/'; // Redirect to the root URL
-      })
-      .catch(error => {
-        console.error('Authentication error:', error);
-      });
-  }
-}, []);
-
+    if (shop && !code) {
+      const state = 'random_state_string'; // Replace with a unique state string
+      const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${API_KEY}&scope=${SCOPES}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&state=${state}`;
+      window.location.href = installUrl;
+    } else if (shop && code && hmac) {
+      axios.post('/api/shopify/callback', { code, shop, hmac })
+        .then(response => {
+          console.log('Authentication successful:', response.data);
+          window.location.href = '/'; // Redirect to the root URL
+        })
+        .catch(error => {
+          console.error('Authentication error:', error);
+        });
+    }
+  }, []);
 
   return (
     <AppProvider>
