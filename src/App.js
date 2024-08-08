@@ -88,27 +88,27 @@ function App() {
     }
   };
 
-  useEffect(() => {
-    const { shop, code, hmac } = queryString.parse(window.location.search);
+useEffect(() => {
+  const { shop, code, hmac } = queryString.parse(window.location.search);
 
-    // Check if we are in the OAuth flow
-    if (shop && !code) {
-      // Initiate OAuth flow
-      const state = 'random_state_string'; // Replace with a unique state string
-      const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${API_KEY}&scope=${SCOPES}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&state=${state}`;
-      window.location.href = installUrl;
-    } else if (shop && code && hmac) {
-      // Handle OAuth callback
-      axios.post('/api/shopify/callback', { code, shop, hmac })
-        .then(response => {
-          console.log('Authentication successful:', response.data);
-          window.location.href = '/'; // Adjust this to your app's dashboard path
-        })
-        .catch(error => {
-          console.error('Authentication error:', error);
-        });
-    }
-  }, []);
+  if (shop && !code) {
+    // Initiate OAuth flow
+    const state = 'random_state_string'; // Replace with a unique state string
+    const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${API_KEY}&scope=${SCOPES}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&state=${state}`;
+    window.location.href = installUrl;
+  } else if (shop && code && hmac) {
+    // Handle OAuth callback
+    axios.post('/api/shopify/callback', { code, shop, hmac })
+      .then(response => {
+        console.log('Authentication successful:', response.data);
+        window.location.href = '/'; // Redirect to the root URL
+      })
+      .catch(error => {
+        console.error('Authentication error:', error);
+      });
+  }
+}, []);
+
 
   return (
     <AppProvider>
