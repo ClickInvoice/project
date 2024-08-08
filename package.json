@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "axios": "^1.7.3",
+    "express": "^4.19.2",
+    "dotenv": "^16.4.5",
     "@shopify/polaris": "^13.9.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
