@@ -1,0 +1,15 @@
+[build]
+  publish = "build"
+  functions = "functions"
+
+[[redirects]]
+  from = "/auth/callback"
+  to = "/auth/callback" # Ensure this matches your app's callback URL
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  force = true
