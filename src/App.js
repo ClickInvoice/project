@@ -102,7 +102,7 @@ function App() {
       axios.post('/api/shopify/callback', { code, shop, hmac })
         .then(response => {
           console.log('Authentication successful:', response.data);
-          window.location.href = '/dashboard'; // Adjust this to your app's dashboard path
+          window.location.href = '/'; // Adjust this to your app's dashboard path
         })
         .catch(error => {
           console.error('Authentication error:', error);
