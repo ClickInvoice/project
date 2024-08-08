@@ -11,8 +11,8 @@ import axios from 'axios';
 
 // Shopify API credentials from environment variables
 const API_KEY = process.env.REACT_APP_SHOPIFY_API_KEY;
-const REDIRECT_URI = process.env.REACT_APP_SHOPIFY_REDIRECT_URI; // Use environment variable
-const SCOPES = ''; // No scopes needed to file
+const REDIRECT_URI = process.env.REACT_APP_SHOPIFY_REDIRECT_URI;
+const SCOPES = ''; // Add necessary scopes if required
 
 const normalizeHeader = (header) => {
   return header
