@@ -10,17 +10,15 @@ import queryString from 'query-string';
 import axios from 'axios';
 
 // Shopify API credentials from environment variables
-const API_KEY = process.env.REACT_APP_API_KEY;
-const API_SECRET = process.env.REACT_APP_API_SECRET;
-const REDIRECT_URI = process.env.REACT_APP_REDIRECT_URI;
-const SCOPES = process.env.REACT_APP_SCOPES;
+const API_KEY = process.env.REACT_APP_SHOPIFY_API_KEY;
+const REDIRECT_URI = 'https://clickinvoice.netlify.app/auth/callback';
+const SCOPES = 'read_orders,write_orders';
 
-// Normalize headers to snake_case
 const normalizeHeader = (header) => {
   return header
     .toLowerCase()
     .replace(/\s+/g, '_')
-    .replace(/[^\w-]/g, ''); // Removed unnecessary escape character
+    .replace(/[^\w-]/g, '');
 };
 
 function App() {
@@ -28,10 +26,9 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('');
 
-  // Handles file selection
   const handleDropZoneDrop = (acceptedFiles) => {
     if (acceptedFiles.length > 0) {
-      setFile(acceptedFiles[0]); // Select the first file
+      setFile(acceptedFiles[0]);
     } else {
       setFile(null);
     }
@@ -47,19 +44,15 @@ function App() {
     setStatus('');
 
     try {
-      // Fetch the template
       const response = await fetch('/invoice_template.docx');
       const templateArrayBuffer = await response.arrayBuffer();
 
-      // Parse the CSV file
       Papa.parse(file, {
-        header: true, // Assumes first row contains headers
+        header: true,
         complete: async (results) => {
           const zip = new JSZip();
 
-          // Iterate over each row
           results.data.forEach(async (row, index) => {
-            // Construct context object with normalized headers
             const context = {};
             Object.keys(row).forEach((key) => {
               const normalizedKey = normalizeHeader(key);
@@ -67,7 +60,6 @@ function App() {
             });
 
             try {
-              // Load and process the template
               const zipFile = new PizZip(templateArrayBuffer);
               const doc = new Docxtemplater(zipFile);
               doc.setData(context);
@@ -99,17 +91,14 @@ function App() {
     const { shop, code, hmac } = queryString.parse(window.location.search);
 
     if (shop && !code) {
-      // Step 1: Redirect to Shopify for app installation
-      const redirectUri = encodeURIComponent(REDIRECT_URI);
-      const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${API_KEY}&scope=${SCOPES}&redirect_uri=${redirectUri}&state=random_state_string`;
+      const state = 'random_state_string'; // Replace with a unique state string
+      const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${API_KEY}&scope=${SCOPES}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&state=${state}`;
 
       window.location.href = installUrl;
     } else if (shop && code && hmac) {
-      // Step 2: Handle OAuth callback and exchange code for access token
       axios.post('/api/shopify/callback', { code, shop, hmac })
         .then(response => {
           console.log('Authentication successful:', response.data);
-          // Redirect to the main page or dashboard
           window.location.href = '/dashboard';
         })
         .catch(error => {
