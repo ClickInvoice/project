@@ -1,29 +1,55 @@
+// src/App.js
 import React, { useState, useEffect } from 'react';
+import { AppProvider, Page, Card, Button, DropZone, Text, Link } from '@shopify/polaris';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Papa from 'papaparse';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
-import { Page, Card, Button, DropZone, Text, AppProvider, Link } from '@shopify/polaris';
-import './App.css';
 import PizZip from 'pizzip';
 import Docxtemplater from 'docxtemplater';
 import queryString from 'query-string';
 import axios from 'axios';
+import { initializeApp } from '@shopify/app-bridge';
+import { Redirect } from '@shopify/app-bridge/actions';
+import './App.css';
 
 // Shopify API credentials from environment variables
 const API_KEY = process.env.REACT_APP_SHOPIFY_API_KEY;
 const REDIRECT_URI = process.env.REACT_APP_SHOPIFY_REDIRECT_URI;
 const SCOPES = ''; // Add necessary scopes if required
 
-const normalizeHeader = (header) => 
+const normalizeHeader = (header) =>
   header
     .toLowerCase()
     .replace(/\s+/g, '_')
     .replace(/[^\w-]/g, '');
 
+const useShopifyAppBridge = (shopOrigin) => {
+  useEffect(() => {
+    const app = initializeApp({
+      apiKey: API_KEY,
+      shopOrigin: shopOrigin,
+      forceRedirect: true,
+    });
+
+    const redirect = Redirect.create(app);
+
+    redirect.dispatch(Redirect.Action.APP, '/path/to/your/app');
+  }, [shopOrigin]);
+};
+
 const App = () => {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('');
+  const [shopOrigin, setShopOrigin] = useState('');
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    setShopOrigin(urlParams.get('shop') || '');
+  }, []);
+
+  useShopifyAppBridge(shopOrigin);
 
   const handleDropZoneDrop = (acceptedFiles) => {
     setFile(acceptedFiles.length > 0 ? acceptedFiles[0] : null);
