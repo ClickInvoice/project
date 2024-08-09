@@ -10,10 +10,6 @@ app.use((req, res, next) => {
   const shop = req.query.shop || '';
   let frameAncestors = "frame-ancestors https://admin.shopify.com";
 
-  if (shop && shop.endsWith('myshopify.com')) {
-    frameAncestors = `frame-ancestors https://${shop} https://admin.shopify.com`;
-  }
-
   // Content-Security-Policy with report-uri
   const csp = [
     "default-src 'self'",
