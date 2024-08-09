@@ -3,13 +3,11 @@ import Papa from 'papaparse';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { Page, Card, Button, DropZone, Text, AppProvider, Link } from '@shopify/polaris';
-import './App.css';
 import PizZip from 'pizzip';
 import Docxtemplater from 'docxtemplater';
 import queryString from 'query-string';
 import axios from 'axios';
 
-// Shopify API credentials from environment variables
 const API_KEY = process.env.REACT_APP_SHOPIFY_API_KEY;
 const REDIRECT_URI = process.env.REACT_APP_SHOPIFY_REDIRECT_URI;
 const SCOPES = ''; // Add necessary scopes if required
@@ -90,7 +88,7 @@ function App() {
     const { shop, code, hmac } = queryString.parse(window.location.search);
 
     if (shop && !code) {
-      const state = 'random_state_string'; // Replace with a unique state string
+      const state = crypto.randomBytes(16).toString('hex'); // Generate a unique state string
       const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${API_KEY}&scope=${SCOPES}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&state=${state}`;
       window.location.href = installUrl;
     } else if (shop && code && hmac) {
