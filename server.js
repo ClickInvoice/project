@@ -7,7 +7,9 @@ app.use(express.json());
 
 // Middleware to set CSP header
 app.use((req, res, next) => {
-  res.setHeader('Content-Security-Policy', 'frame-ancestors https://*.myshopify.com https://admin.shopify.com https://*.shopify.com');
+  // Assuming 'clickinvoiceapp.myshopify.com' is your specific shop domain
+  const shopDomain = 'clickinvoiceapp.myshopify.com';
+  res.setHeader('Content-Security-Policy', `frame-ancestors https://${shopDomain} https://admin.shopify.com`);
   next();
 });
 
