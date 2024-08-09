@@ -5,21 +5,26 @@ require('dotenv').config();
 const app = express();
 app.use(express.json());
 
-// Middleware to set CSP header
+// Middleware to set CSP headers with frame-ancestors directive
 app.use((req, res, next) => {
-  const shopDomain = 'clickinvoiceapp.myshopify.com'; // Your specific shop domain
-  res.setHeader('Content-Security-Policy', 
-    `default-src 'self'; 
-     frame-ancestors https://${shopDomain} https://admin.shopify.com; 
-     script-src 'self' 'unsafe-inline' 'unsafe-eval'; 
-     object-src 'none'; 
-     style-src 'self' 'unsafe-inline'; 
-     connect-src 'self' https://*.shopify.com; 
-     img-src 'self' data:; 
-     font-src 'self'; 
-     form-action 'self'; 
-     base-uri 'self';`
-  );
+  const shop = req.query.shop || '';
+  let frameAncestors = "frame-ancestors https://admin.shopify.com";
+
+  if (shop && shop.endsWith('myshopify.com')) {
+    frameAncestors = `frame-ancestors https://${shop} https://admin.shopify.com`;
+  }
+
+  // Content-Security-Policy with report-uri
+  const csp = [
+    "default-src 'self'",
+    "script-src 'strict-dynamic' 'nonce-rAnd0m123' 'unsafe-inline' http: https:;",
+    "object-src 'none'",
+    "base-uri 'none'",
+    "require-trusted-types-for 'script'",
+    "report-uri https://clickinvoice.netlify.app/.Netlify/csp-report"
+  ].join('; ');
+
+  res.setHeader('Content-Security-Policy', csp);
   next();
 });
 
