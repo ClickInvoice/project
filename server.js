@@ -5,28 +5,32 @@ require('dotenv').config();
 const app = express();
 app.use(express.json());
 
-// Middleware to set CSP headers dynamically based on the shop domain
-app.use((req, res, next) => {
-  const urlParts = req.url.split('?');
+// Middleware to dynamically set CSP headers based on Shopify domain
+app.use(async (req, res, next) => {
+  // Get rid of everything before the ? in the URL
+  const bits = req.url.split("?");
 
-  if (urlParts.length >= 2) {
-    const queryString = new URLSearchParams(urlParts[1]);
-    const shop = queryString.get('shop');
+  // If shopify domain is present, add it to the response headers frame-ancestor list
+  if (bits.length >= 2) {
+    // Get the "shop" param from the query string
+    const queryString = new URLSearchParams(bits[1]);
+    const shop = queryString.get("shop");
 
-    if (shop && shop.endsWith('myshopify.com')) {
+    // If domain ends with "myshopify.com", allow it
+    if (shop && shop.endsWith("myshopify.com")) {
       res.setHeader(
-        'Content-Security-Policy',
-        `frame-ancestors 'self' https://*.myshopify.com https://${shop}`
+        "Content-Security-Policy",
+        `frame-ancestors https://admin.shopify.com https://${shop}`
       );
     } else {
       res.setHeader(
-        'Content-Security-Policy',
+        "Content-Security-Policy",
         "frame-ancestors 'self' https://*.myshopify.com"
       );
     }
   } else {
     res.setHeader(
-      'Content-Security-Policy',
+      "Content-Security-Policy",
       "frame-ancestors 'self' https://*.myshopify.com"
     );
   }
@@ -34,6 +38,7 @@ app.use((req, res, next) => {
   next();
 });
 
+// API endpoint to handle Shopify OAuth callback
 app.post('/api/shopify/callback', async (req, res) => {
   const { code, shop, hmac } = req.body;
   const API_KEY = process.env.SHOPIFY_API_KEY;
