@@ -9,10 +9,9 @@ import PizZip from 'pizzip';
 import Docxtemplater from 'docxtemplater';
 import queryString from 'query-string';
 import axios from 'axios';
-import { Provider, useAppBridge } from '@shopify/app-bridge-react';
-import { Redirect } from '@shopify/app-bridge/actions';
 import './App.css';
 
+// Shopify API credentials from environment variables
 const API_KEY = process.env.REACT_APP_SHOPIFY_API_KEY;
 const REDIRECT_URI = process.env.REACT_APP_SHOPIFY_REDIRECT_URI;
 const SCOPES = ''; // Add necessary scopes if required
@@ -22,15 +21,6 @@ const normalizeHeader = (header) =>
     .toLowerCase()
     .replace(/\s+/g, '_')
     .replace(/[^\w-]/g, '');
-
-const useShopifyAppBridge = (shopOrigin) => {
-  const app = useAppBridge();
-
-  useEffect(() => {
-    const redirect = Redirect.create(app);
-    redirect.dispatch(Redirect.Action.APP, '/path/to/your/app');
-  }, [app, shopOrigin]);
-};
 
 const App = () => {
   const [file, setFile] = useState(null);
@@ -42,8 +32,6 @@ const App = () => {
     const urlParams = new URLSearchParams(window.location.search);
     setShopOrigin(urlParams.get('shop') || '');
   }, []);
-
-  useShopifyAppBridge(shopOrigin);
 
   const handleDropZoneDrop = (acceptedFiles) => {
     setFile(acceptedFiles.length > 0 ? acceptedFiles[0] : null);
@@ -121,48 +109,46 @@ const App = () => {
   }, []);
 
   return (
-    <Provider config={{ apiKey: API_KEY, shopOrigin: shopOrigin }}>
-      <AppProvider>
-        <Page title="Click Invoice - Bulk Invoice Generator">
-          <Card title="Upload CSV and Generate Invoices" sectioned>
-            <DropZone
-              allowMultiple={false}
-              onDrop={handleDropZoneDrop}
-              dropZoneText="Drag and drop a CSV file or click to select one"
-            >
-              <Text variant="bodyMd" as="p">
-                {file ? file.name : 'No file chosen'}
-              </Text>
-            </DropZone>
-            <Button
-              primary
-              onClick={handleGenerateInvoices}
-              loading={loading}
-              disabled={loading}
-              style={{ marginTop: '20px' }}
-            >
-              Generate Invoices
-            </Button>
-            {status && <Text style={{ marginTop: '20px' }}>{status}</Text>}
-          </Card>
-          <Card title="Support Us" sectioned>
+    <AppProvider>
+      <Page title="Click Invoice - Bulk Invoice Generator">
+        <Card title="Upload CSV and Generate Invoices" sectioned>
+          <DropZone
+            allowMultiple={false}
+            onDrop={handleDropZoneDrop}
+            dropZoneText="Drag and drop a CSV file or click to select one"
+          >
             <Text variant="bodyMd" as="p">
-              Instructions: <br />
-              1. Download CSV order export <br />
-              2. Upload to ClickInvoice <br />
-              3. Click "Generate Invoices" <br />
+              {file ? file.name : 'No file chosen'}
             </Text>
-            <br />
-            <Text variant="bodyMd" as="p" style={{ marginTop: '10px' }}>
-              If you are enjoying Click Invoice, a cup of coffee would make our day. Keep it free by donating: 
-              <Link url="https://buymeacoffee.com/clickinvoice" external>
-                Donate
-              </Link>
-            </Text>
-          </Card>
-        </Page>
-      </AppProvider>
-    </Provider>
+          </DropZone>
+          <Button
+            primary
+            onClick={handleGenerateInvoices}
+            loading={loading}
+            disabled={loading}
+            style={{ marginTop: '20px' }}
+          >
+            Generate Invoices
+          </Button>
+          {status && <Text style={{ marginTop: '20px' }}>{status}</Text>}
+        </Card>
+        <Card title="Support Us" sectioned>
+          <Text variant="bodyMd" as="p">
+            Instructions: <br />
+            1. Download CSV order export <br />
+            2. Upload to ClickInvoice <br />
+            3. Click "Generate Invoices" <br />
+          </Text>
+          <br />
+          <Text variant="bodyMd" as="p" style={{ marginTop: '10px' }}>
+            If you are enjoying Click Invoice, a cup of coffee would make our day. Keep it free by donating: 
+            <Link url="https://buymeacoffee.com/clickinvoice" external>
+              Donate
+            </Link>
+          </Text>
+        </Card>
+      </Page>
+    </AppProvider>
   );
 };
 
