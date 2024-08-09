@@ -3,11 +3,13 @@ import Papa from 'papaparse';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { Page, Card, Button, DropZone, Text, AppProvider, Link } from '@shopify/polaris';
+import './App.css';
 import PizZip from 'pizzip';
 import Docxtemplater from 'docxtemplater';
 import queryString from 'query-string';
 import axios from 'axios';
 
+// Shopify API credentials from environment variables
 const API_KEY = process.env.REACT_APP_SHOPIFY_API_KEY;
 const REDIRECT_URI = process.env.REACT_APP_SHOPIFY_REDIRECT_URI;
 const SCOPES = ''; // Add necessary scopes if required
@@ -64,7 +66,7 @@ function App() {
               doc.render();
 
               const output = doc.getZip().generate({ type: 'blob' });
-              zip.file(`invoice_${index + 1}.docx`, output);
+              zip.file(invoice_${index + 1}.docx, output);
             } catch (error) {
               console.error('Error rendering template for row', index + 1, error);
             }
@@ -88,8 +90,8 @@ function App() {
     const { shop, code, hmac } = queryString.parse(window.location.search);
 
     if (shop && !code) {
-      const state = Math.random().toString(36).substring(2, 15); // Generate a unique state string
-      const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${API_KEY}&scope=${SCOPES}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&state=${state}`;
+      const state = 'random_state_string'; // Replace with a unique state string
+      const installUrl = https://${shop}/admin/oauth/authorize?client_id=${API_KEY}&scope=${SCOPES}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&state=${state};
       window.location.href = installUrl;
     } else if (shop && code && hmac) {
       axios.post('/api/shopify/callback', { code, shop, hmac })
