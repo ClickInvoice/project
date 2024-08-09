@@ -10,15 +10,13 @@ app.use(express.json());
 app.use((req, res, next) => {
   const nonce = crypto.randomBytes(16).toString('base64');
   const shop = req.query.shop || '';
-  let frameAncestors = "frame-ancestors 'self'";
-
-  if (shop && shop.endsWith('myshopify.com')) {
-    frameAncestors += ` https://${shop}`;
-  }
+  const frameAncestors = shop.endsWith('myshopify.com') ? 
+    `frame-ancestors 'self' https://${shop}` : 
+    "frame-ancestors 'self'";
 
   const csp = [
     "default-src 'self'",
-    `script-src 'strict-dynamic' 'nonce-${nonce}' 'unsafe-inline' http: https:`,
+    `script-src 'strict-dynamic' 'nonce-${nonce}' 'unsafe-inline' https:`,
     "object-src 'none'",
     "base-uri 'none'",
     "require-trusted-types-for 'script'",
