@@ -5,22 +5,9 @@ require('dotenv').config();
 const app = express();
 app.use(express.json());
 
-// Middleware to set CSP headers with frame-ancestors directive
+// Middleware to set CSP header
 app.use((req, res, next) => {
-  let frameAncestors = "frame-ancestors https://admin.shopify.com";
-
-  // Extract query parameters from URL
-  const urlParts = req.url.split('?');
-  if (urlParts.length >= 2) {
-    const queryString = new URLSearchParams(urlParts[1]);
-    const shop = queryString.get('shop');
-
-    if (shop && shop.endsWith('myshopify.com')) {
-      frameAncestors = `frame-ancestors https://${shop} https://admin.shopify.com`;
-    }
-  }
-
-  res.setHeader('Content-Security-Policy', frameAncestors);
+  res.setHeader('Content-Security-Policy', 'frame-ancestors https://*.myshopify.com https://admin.shopify.com');
   next();
 });
 
