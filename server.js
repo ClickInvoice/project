@@ -7,9 +7,14 @@ app.use(express.json());
 
 // Middleware to set CSP header
 app.use((req, res, next) => {
-  // Assuming 'clickinvoiceapp.myshopify.com' is your specific shop domain
-  const shopDomain = 'clickinvoiceapp.myshopify.com';
-  res.setHeader('Content-Security-Policy', `frame-ancestors https://${shopDomain} https://admin.shopify.com`);
+  const shopDomain = 'clickinvoiceapp.myshopify.com'; // Your specific shop domain
+  res.setHeader('Content-Security-Policy', 
+    `default-src 'self'; 
+     frame-ancestors https://${shopDomain} https://admin.shopify.com; 
+     script-src 'self' 'unsafe-inline' 'unsafe-eval'; 
+     object-src 'none'; 
+     require-trusted-types-for 'script';`
+  );
   next();
 });
 
