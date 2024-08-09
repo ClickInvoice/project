@@ -7,8 +7,8 @@
     "express": "^4.19.2",
     "dotenv": "^16.4.5",
     "@shopify/polaris": "^13.9.0",
-    "@shopify/app-bridge": "^3.0.0",
-    "@shopify/app-bridge-react": "^3.0.0",
+    "@shopify/app-bridge-react": "^3.7.10",  // Updated version
+    "react-router-dom": "^6.10.0",  // Added dependency
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
