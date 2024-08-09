@@ -13,7 +13,12 @@ app.use((req, res, next) => {
      frame-ancestors https://${shopDomain} https://admin.shopify.com; 
      script-src 'self' 'unsafe-inline' 'unsafe-eval'; 
      object-src 'none'; 
-     require-trusted-types-for 'script';`
+     style-src 'self' 'unsafe-inline'; 
+     connect-src 'self' https://*.shopify.com; 
+     img-src 'self' data:; 
+     font-src 'self'; 
+     form-action 'self'; 
+     base-uri 'self';`
   );
   next();
 });
