@@ -7,7 +7,6 @@ app.use(express.json());
 
 // Middleware to set CSP headers with frame-ancestors directive
 app.use((req, res, next) => {
-  // Default frame-ancestors directive
   let frameAncestors = "frame-ancestors https://admin.shopify.com";
 
   // Extract query parameters from URL
@@ -16,7 +15,6 @@ app.use((req, res, next) => {
     const queryString = new URLSearchParams(urlParts[1]);
     const shop = queryString.get('shop');
 
-    // Add shop domain to frame-ancestors if it ends with 'myshopify.com'
     if (shop && shop.endsWith('myshopify.com')) {
       frameAncestors = `frame-ancestors https://${shop} https://admin.shopify.com`;
     }
@@ -27,10 +25,9 @@ app.use((req, res, next) => {
 });
 
 app.post('/api/shopify/callback', async (req, res) => {
-  const { code, shop, hmac } = req.body;
+  const { code, shop } = req.body;
   const API_KEY = process.env.SHOPIFY_API_KEY;
   const API_SECRET = process.env.SHOPIFY_API_SECRET;
-  const REDIRECT_URI = process.env.SHOPIFY_REDIRECT_URI;
 
   try {
     const response = await axios.post(`https://${shop}/admin/oauth/access_token`, {
