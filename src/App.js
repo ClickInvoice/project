@@ -14,24 +14,19 @@ const API_KEY = process.env.REACT_APP_SHOPIFY_API_KEY;
 const REDIRECT_URI = process.env.REACT_APP_SHOPIFY_REDIRECT_URI;
 const SCOPES = ''; // Add necessary scopes if required
 
-const normalizeHeader = (header) => {
-  return header
+const normalizeHeader = (header) => 
+  header
     .toLowerCase()
     .replace(/\s+/g, '_')
     .replace(/[^\w-]/g, '');
-};
 
-function App() {
+const App = () => {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('');
 
   const handleDropZoneDrop = (acceptedFiles) => {
-    if (acceptedFiles.length > 0) {
-      setFile(acceptedFiles[0]);
-    } else {
-      setFile(null);
-    }
+    setFile(acceptedFiles.length > 0 ? acceptedFiles[0] : null);
   };
 
   const handleGenerateInvoices = async () => {
@@ -52,11 +47,10 @@ function App() {
         complete: async (results) => {
           const zip = new JSZip();
 
-          results.data.forEach(async (row, index) => {
+          await Promise.all(results.data.map(async (row, index) => {
             const context = {};
-            Object.keys(row).forEach((key) => {
-              const normalizedKey = normalizeHeader(key);
-              context[normalizedKey] = row[key];
+            Object.keys(row).forEach(key => {
+              context[normalizeHeader(key)] = row[key];
             });
 
             try {
@@ -70,11 +64,10 @@ function App() {
             } catch (error) {
               console.error('Error rendering template for row', index + 1, error);
             }
-          });
+          }));
 
           const content = await zip.generateAsync({ type: 'blob' });
           saveAs(content, 'shopify_invoices.zip');
-
           setStatus('Invoices generated successfully and saved to your Downloads folder!');
         }
       });
@@ -89,19 +82,21 @@ function App() {
   useEffect(() => {
     const { shop, code, hmac } = queryString.parse(window.location.search);
 
-    if (shop && !code) {
-      const state = 'random_state_string'; // Replace with a unique state string
-      const installUrl = https://${shop}/admin/oauth/authorize?client_id=${API_KEY}&scope=${SCOPES}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&state=${state};
-      window.location.href = installUrl;
-    } else if (shop && code && hmac) {
-      axios.post('/api/shopify/callback', { code, shop, hmac })
-        .then(response => {
-          console.log('Authentication successful:', response.data);
-          window.location.href = '/'; // Redirect to the root URL
-        })
-        .catch(error => {
-          console.error('Authentication error:', error);
-        });
+    if (shop) {
+      if (!code) {
+        const state = 'random_state_string'; // Replace with a unique state string
+        const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${API_KEY}&scope=${SCOPES}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&state=${state}`;
+        window.location.href = installUrl;
+      } else if (code && hmac) {
+        axios.post('/api/shopify/callback', { code, shop, hmac })
+          .then(response => {
+            console.log('Authentication successful:', response.data);
+            window.location.href = '/'; // Redirect to the root URL
+          })
+          .catch(error => {
+            console.error('Authentication error:', error);
+          });
+      }
     }
   }, []);
 
@@ -114,15 +109,9 @@ function App() {
             onDrop={handleDropZoneDrop}
             dropZoneText="Drag and drop a CSV file or click to select one"
           >
-            {file ? (
-              <Text variant="bodyMd" as="p">
-                {file.name}
-              </Text>
-            ) : (
-              <Text variant="bodyMd" as="p">
-                No file chosen
-              </Text>
-            )}
+            <Text variant="bodyMd" as="p">
+              {file ? file.name : 'No file chosen'}
+            </Text>
           </DropZone>
           <Button
             primary
@@ -144,7 +133,8 @@ function App() {
           </Text>
           <br />
           <Text variant="bodyMd" as="p" style={{ marginTop: '10px' }}>
-            If you are enjoying Click Invoice, a cup of coffee would make our day. Keep it free by donating: <Link url="https://buymeacoffee.com/clickinvoice" external>
+            If you are enjoying Click Invoice, a cup of coffee would make our day. Keep it free by donating: 
+            <Link url="https://buymeacoffee.com/clickinvoice" external>
               Donate
             </Link>
           </Text>
@@ -152,6 +142,6 @@ function App() {
       </Page>
     </AppProvider>
   );
-}
+};
 
 export default App;
