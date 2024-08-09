@@ -1,7 +1,7 @@
 // src/App.js
 import React, { useState, useEffect } from 'react';
 import { AppProvider, Page, Card, Button, DropZone, Text, Link } from '@shopify/polaris';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import Papa from 'papaparse';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
@@ -128,44 +128,46 @@ const App = () => {
 
   return (
     <AppProvider>
-      <Page title="Click Invoice - Bulk Invoice Generator">
-        <Card title="Upload CSV and Generate Invoices" sectioned>
-          <DropZone
-            allowMultiple={false}
-            onDrop={handleDropZoneDrop}
-            dropZoneText="Drag and drop a CSV file or click to select one"
-          >
+      <Router>
+        <Page title="Click Invoice - Bulk Invoice Generator">
+          <Card title="Upload CSV and Generate Invoices" sectioned>
+            <DropZone
+              allowMultiple={false}
+              onDrop={handleDropZoneDrop}
+              dropZoneText="Drag and drop a CSV file or click to select one"
+            >
+              <Text variant="bodyMd" as="p">
+                {file ? file.name : 'No file chosen'}
+              </Text>
+            </DropZone>
+            <Button
+              primary
+              onClick={handleGenerateInvoices}
+              loading={loading}
+              disabled={loading}
+              style={{ marginTop: '20px' }}
+            >
+              Generate Invoices
+            </Button>
+            {status && <Text style={{ marginTop: '20px' }}>{status}</Text>}
+          </Card>
+          <Card title="Support Us" sectioned>
             <Text variant="bodyMd" as="p">
-              {file ? file.name : 'No file chosen'}
+              Instructions: <br />
+              1. Download CSV order export <br />
+              2. Upload to ClickInvoice <br />
+              3. Click "Generate Invoices" <br />
             </Text>
-          </DropZone>
-          <Button
-            primary
-            onClick={handleGenerateInvoices}
-            loading={loading}
-            disabled={loading}
-            style={{ marginTop: '20px' }}
-          >
-            Generate Invoices
-          </Button>
-          {status && <Text style={{ marginTop: '20px' }}>{status}</Text>}
-        </Card>
-        <Card title="Support Us" sectioned>
-          <Text variant="bodyMd" as="p">
-            Instructions: <br />
-            1. Download CSV order export <br />
-            2. Upload to ClickInvoice <br />
-            3. Click "Generate Invoices" <br />
-          </Text>
-          <br />
-          <Text variant="bodyMd" as="p" style={{ marginTop: '10px' }}>
-            If you are enjoying Click Invoice, a cup of coffee would make our day. Keep it free by donating: 
-            <Link url="https://buymeacoffee.com/clickinvoice" external>
-              Donate
-            </Link>
-          </Text>
-        </Card>
-      </Page>
+            <br />
+            <Text variant="bodyMd" as="p" style={{ marginTop: '10px' }}>
+              If you are enjoying Click Invoice, a cup of coffee would make our day. Keep it free by donating: 
+              <Link url="https://buymeacoffee.com/clickinvoice" external>
+                Donate
+              </Link>
+            </Text>
+          </Card>
+        </Page>
+      </Router>
     </AppProvider>
   );
 };
