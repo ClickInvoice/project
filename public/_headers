@@ -1,7 +1,7 @@
-/*
-  Content-Security-Policy: default-src 'self'; 
-                          script-src 'strict-dynamic' 'nonce-<random-crypto-value>' 'unsafe-inline' https:; 
-                          object-src 'none'; 
-                          base-uri 'none'; 
-                          require-trusted-types-for 'script'; 
-                          report-uri https://clickinvoice.netlify.app/.Netlify/csp-report;
+Content-Security-Policy: default-src 'self'; 
+                        script-src 'strict-dynamic' 'nonce-<random-crypto-value>' 'unsafe-inline' https:; 
+                        object-src 'none'; 
+                        base-uri 'none'; 
+                        require-trusted-types-for 'script'; 
+                        report-uri https://clickinvoice.netlify.app/.Netlify/csp-report; 
+                        frame-ancestors 'self' https://admin.shopify.com https://<shop>.myshopify.com;
