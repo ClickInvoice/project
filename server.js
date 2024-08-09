@@ -1,6 +1,6 @@
 const express = require('express');
 const axios = require('axios');
-const crypto = require('crypto'); // For generating secure random nonces
+const crypto = require('crypto');
 require('dotenv').config();
 
 const app = express();
@@ -8,9 +8,7 @@ app.use(express.json());
 
 // Middleware to generate a nonce and set CSP headers
 app.use((req, res, next) => {
-  // Generate a random nonce
   const nonce = crypto.randomBytes(16).toString('base64');
-  
   const shop = req.query.shop || '';
   let frameAncestors = "frame-ancestors 'self' https://admin.shopify.com";
 
@@ -18,23 +16,23 @@ app.use((req, res, next) => {
     frameAncestors += ` https://${shop}`;
   }
 
-  // Content-Security-Policy with report-uri and nonce
   const csp = [
     "default-src 'self'",
     `script-src 'strict-dynamic' 'nonce-${nonce}' 'unsafe-inline' http: https:`,
     "object-src 'none'",
     "base-uri 'none'",
     "require-trusted-types-for 'script'",
-    "report-uri https://clickinvoice.netlify.app/.Netlify/csp-report",
-    frameAncestors
+    `frame-ancestors ${frameAncestors};`,
+    "report-uri https://clickinvoice.netlify.app/.Netlify/csp-report"
   ].join('; ');
 
   res.setHeader('Content-Security-Policy', csp);
   res.locals.nonce = nonce;
-  
+
   next();
 });
 
+// Shopify OAuth callback endpoint
 app.post('/api/shopify/callback', async (req, res) => {
   const { code, shop } = req.body;
   const API_KEY = process.env.SHOPIFY_API_KEY;
@@ -53,6 +51,16 @@ app.post('/api/shopify/callback', async (req, res) => {
     console.error('Error exchanging code for access token:', error);
     res.status(500).send('Authentication error');
   }
+});
+
+// Serve the app from a specific route
+app.get('/app', (req, res) => {
+  const shop = req.query.shop;
+  if (!shop) {
+    return res.status(400).send('Missing shop parameter');
+  }
+  
+  res.redirect(`https://${shop}/admin/apps`);
 });
 
 const PORT = process.env.PORT || 5000;
