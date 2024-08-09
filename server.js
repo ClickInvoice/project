@@ -7,7 +7,7 @@ app.use(express.json());
 
 // Middleware to set CSP header
 app.use((req, res, next) => {
-  res.setHeader('Content-Security-Policy', 'frame-ancestors https://*.myshopify.com https://admin.shopify.com');
+  res.setHeader('Content-Security-Policy', 'frame-ancestors https://*.myshopify.com https://admin.shopify.com https://*.shopify.com');
   next();
 });
 
