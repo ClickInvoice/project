@@ -10,7 +10,7 @@ app.use(express.json());
 app.use((req, res, next) => {
   const nonce = crypto.randomBytes(16).toString('base64');
   const shop = req.query.shop || '';
-  let frameAncestors = "frame-ancestors 'self' https://admin.shopify.com";
+  let frameAncestors = "frame-ancestors 'self'";
 
   if (shop && shop.endsWith('myshopify.com')) {
     frameAncestors += ` https://${shop}`;
@@ -22,7 +22,7 @@ app.use((req, res, next) => {
     "object-src 'none'",
     "base-uri 'none'",
     "require-trusted-types-for 'script'",
-    `frame-ancestors ${frameAncestors};`,
+    frameAncestors,
     "report-uri https://clickinvoice.netlify.app/.Netlify/csp-report"
   ].join('; ');
 
@@ -59,7 +59,7 @@ app.get('/app', (req, res) => {
   if (!shop) {
     return res.status(400).send('Missing shop parameter');
   }
-  
+
   res.redirect(`https://${shop}/admin/apps`);
 });
 
