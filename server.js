@@ -12,10 +12,10 @@ app.use((req, res, next) => {
   const nonce = crypto.randomBytes(16).toString('base64');
   
   const shop = req.query.shop || '';
-  let frameAncestors = "frame-ancestors https://admin.shopify.com";
-  
+  let frameAncestors = "frame-ancestors 'self' https://admin.shopify.com";
+
   if (shop && shop.endsWith('myshopify.com')) {
-    frameAncestors = `frame-ancestors https://${shop} https://admin.shopify.com`;
+    frameAncestors += ` https://${shop}`;
   }
 
   // Content-Security-Policy with report-uri and nonce
@@ -30,8 +30,6 @@ app.use((req, res, next) => {
   ].join('; ');
 
   res.setHeader('Content-Security-Policy', csp);
-
-  // Pass nonce to the response locals for use in templates
   res.locals.nonce = nonce;
   
   next();
