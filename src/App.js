@@ -7,7 +7,6 @@ import PizZip from 'pizzip';
 import Docxtemplater from 'docxtemplater';
 import queryString from 'query-string';
 import axios from 'axios';
-import crypto from 'crypto';
 
 const API_KEY = process.env.REACT_APP_SHOPIFY_API_KEY;
 const REDIRECT_URI = process.env.REACT_APP_SHOPIFY_REDIRECT_URI;
@@ -89,7 +88,7 @@ function App() {
     const { shop, code, hmac } = queryString.parse(window.location.search);
 
     if (shop && !code) {
-      const state = crypto.randomBytes(16).toString('hex'); // Generate a unique state string
+      const state = Math.random().toString(36).substring(2, 15); // Generate a unique state string
       const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${API_KEY}&scope=${SCOPES}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&state=${state}`;
       window.location.href = installUrl;
     } else if (shop && code && hmac) {
