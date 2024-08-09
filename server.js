@@ -19,15 +19,15 @@ app.use((req, res, next) => {
       // Set Content-Security-Policy to allow framing by the authenticated shop domain
       res.setHeader(
         'Content-Security-Policy',
-        `frame-ancestors 'self' https://admin.shopify.com https://${shop}`
+        `frame-ancestors 'self' https://*.myshopify.com https://${shop}`
       );
     } else {
       // Default CSP if shop domain is not present or invalid
-      res.setHeader('Content-Security-Policy', "frame-ancestors 'self' https://*.myshopify.com");
+      res.setHeader('Content-Security-Policy', "frame-ancestors 'self' https://*.myshopify.com https://*.shopify.com https://admin.shopify.com");
     }
   } else {
     // Default CSP if no query parameters
-    res.setHeader('Content-Security-Policy', "frame-ancestors 'self' https://*.myshopify.com");
+    res.setHeader('Content-Security-Policy', "frame-ancestors 'self' https://*.myshopify.com https://*.shopify.com https://admin.shopify.com");
   }
 
   next();
