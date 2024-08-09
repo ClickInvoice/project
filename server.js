@@ -5,9 +5,31 @@ require('dotenv').config();
 const app = express();
 app.use(express.json());
 
-// Manually set CSP headers
+// Middleware to set CSP headers dynamically based on the shop domain
 app.use((req, res, next) => {
-  res.setHeader("Content-Security-Policy", "frame-ancestors 'self' https://*.myshopify.com");
+  const urlParts = req.url.split('?');
+  
+  // Check if there are query parameters in the request
+  if (urlParts.length >= 2) {
+    const queryString = new URLSearchParams(urlParts[1]);
+    const shop = queryString.get('shop');
+    
+    // If the 'shop' parameter is present and ends with 'myshopify.com'
+    if (shop && shop.endsWith('myshopify.com')) {
+      // Set Content-Security-Policy to allow framing by the authenticated shop domain
+      res.setHeader(
+        'Content-Security-Policy',
+        `frame-ancestors 'self' https://admin.shopify.com https://${shop}`
+      );
+    } else {
+      // Default CSP if shop domain is not present or invalid
+      res.setHeader('Content-Security-Policy', "frame-ancestors 'self' https://*.myshopify.com");
+    }
+  } else {
+    // Default CSP if no query parameters
+    res.setHeader('Content-Security-Policy', "frame-ancestors 'self' https://*.myshopify.com");
+  }
+
   next();
 });
 
