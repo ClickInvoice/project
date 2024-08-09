@@ -66,7 +66,7 @@ function App() {
               doc.render();
 
               const output = doc.getZip().generate({ type: 'blob' });
-              zip.file(invoice_${index + 1}.docx, output);
+              zip.file(`invoice_${index + 1}.docx`, output);
             } catch (error) {
               console.error('Error rendering template for row', index + 1, error);
             }
