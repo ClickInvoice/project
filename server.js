@@ -5,6 +5,12 @@ require('dotenv').config();
 const app = express();
 app.use(express.json());
 
+// Manually set CSP headers
+app.use((req, res, next) => {
+  res.setHeader("Content-Security-Policy", "frame-ancestors 'self' https://*.myshopify.com");
+  next();
+});
+
 app.post('/api/shopify/callback', async (req, res) => {
   const { code, shop, hmac } = req.body;
   const API_KEY = process.env.SHOPIFY_API_KEY;
